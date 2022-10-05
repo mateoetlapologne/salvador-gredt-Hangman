@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -37,9 +38,12 @@ func (h *HangManData) init() { //func to initialize the game
 	h.game()
 }
 func (h *HangManData) game() {
-	if len(h.ToFind) == len(h.KnownLetters) {
+	//print a txt file
+	url := "src/ascii-art/pos" + strconv.Itoa(h.Attempts-1) + ".txt"
+	os.OpenFile(url, os.O_RDONLY, 0666)
+	if h.Word == h.ToFind {
 		fmt.Println("Vous avez gagné")
-	} else if h.Attempts == 0 {
+	} else if h.Attempts == 1 {
 		fmt.Println("Vous avez perdu")
 	} else {
 		var entry string
