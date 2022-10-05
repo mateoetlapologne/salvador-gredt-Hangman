@@ -22,6 +22,7 @@ func main() {
 }
 
 func (h *HangManData) init() {
+	h.Attempts = 10
 	h.ToFind = randomWord()
 	n := (len(h.ToFind) / 2) - 1
 	h.Word = string(h.ToFind[n])
@@ -35,7 +36,7 @@ func (h *HangManData) init() {
 			pword += "_"
 		}
 	}
-	fmt.Println(pword)
+	fmt.Println("Bienvenue au Jeu du Pendu, Il te reste ", h.Attempts, " essai(s) \nVoila les lettres que tu a trouvée(s) : ", pword)
 }
 
 func randomWord() string {
