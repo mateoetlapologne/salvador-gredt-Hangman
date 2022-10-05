@@ -38,9 +38,8 @@ func (h *HangManData) init() { //func to initialize the game
 	h.game()
 }
 func (h *HangManData) game() {
-	//print a txt file
 	url := "src/ascii-art/pos" + strconv.Itoa(h.Attempts-1) + ".txt"
-	os.OpenFile(url, os.O_RDONLY, 0666)
+	_ = url
 	if h.Word == h.ToFind {
 		fmt.Println("Vous avez gagné")
 	} else if h.Attempts == 1 {
