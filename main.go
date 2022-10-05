@@ -21,24 +21,31 @@ func main() {
 	h.init()
 }
 
-func (h *HangManData) init() {
+func (h *HangManData) init() { //func to initialize the game
 	h.Attempts = 10
 	h.ToFind = randomWord()
 	n := (len(h.ToFind) / 2) - 1
-	h.Word = string(h.ToFind[n])
-	var pword string
 	fmt.Println(h.ToFind)
-	for _, v := range h.ToFind {
-		if string(v) == h.Word {
-			pword += string(v)
-			h.Word = ""
-		} else {
-			pword += "_"
+	h.updateword(string(h.ToFind[n]))
+	fmt.Println("Bienvenue au Jeu du Pendu, Il te reste ", h.Attempts, " essai(s) \nVoila les lettres que tu a trouvée(s) : ", h.Word)
+}
+func isintheword(word string, letter string) bool { //func to check if the letter is in the word
+	for _, v := range word {
+		if string(v) == letter {
+			return true
 		}
 	}
-	fmt.Println("Bienvenue au Jeu du Pendu, Il te reste ", h.Attempts, " essai(s) \nVoila les lettres que tu a trouvée(s) : ", pword)
+	return false
 }
-
+func (h *HangManData) updateword(letter string) { //func to update the display
+	for _, v := range h.ToFind {
+		if string(v) == letter {
+			h.Word += string(v)
+		} else {
+			h.Word += "_"
+		}
+	}
+}
 func randomWord() string {
 	//read the file
 	file, err := os.Open("src/words.txt")
