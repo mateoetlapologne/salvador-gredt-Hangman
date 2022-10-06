@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -11,11 +12,10 @@ import (
 )
 
 type HangManData struct {
-	Word             string
-	ToFind           string
-	Attempts         int
-	HangmanPositions [10]string
-	KnownLetters     []string
+	Word         string
+	ToFind       string
+	Attempts     int
+	KnownLetters []string
 }
 
 func main() {
@@ -31,18 +31,26 @@ func (h *HangManData) init() { //func to initialize the game
 		_ = v //to avoid the error
 	}
 	n := (len(h.ToFind) / 2) - 1
-	fmt.Println(h.ToFind)
 	fmt.Println("Bienvenue au Jeu du Pendu")
 	h.KnownLetters = append(h.KnownLetters, string(h.ToFind[n]))
 	h.updateword()
 	h.game()
 }
 func (h *HangManData) game() {
-	url := "src/ascii-art/pos" + strconv.Itoa(h.Attempts-1) + ".txt"
-	_ = url
+
+	if h.Attempts < 10 { //print the hangman position
+		url := "src/ascii-art/pos" + strconv.Itoa(h.Attempts) + ".txt"
+		_ = url
+		content, err := ioutil.ReadFile(url)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(string(content))
+	}
 	if h.Word == h.ToFind {
 		fmt.Println("Vous avez gagné")
-	} else if h.Attempts == 1 {
+	} else if h.Attempts == 0 {
 		fmt.Println("Vous avez perdu")
 	} else {
 		var entry string
@@ -89,7 +97,6 @@ func (h *HangManData) updateword() { //func to update the display
 		}
 	}
 }
-
 func randomWord() string { //func to get a random word from the file.txt
 	//read the file
 	file, err := os.Open("src/words.txt")
