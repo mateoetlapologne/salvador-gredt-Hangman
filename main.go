@@ -56,19 +56,32 @@ func (h *HangManData) game() {
 		var entry string
 		fmt.Println("Il te reste ", h.Attempts, " essai(s) \nVoila les lettres que tu a trouvée(s) : ", h.Word, "\nVeuillez entrer une lettre : ")
 		fmt.Scan(&entry)
-		if isintheword(h.ToFind, entry) {
-			if AlreadyKnown(h, entry) {
-				fmt.Println("Tu as déjà trouvé cette lettre")
+		if len(entry) == 1 {
+			if isintheword(h.ToFind, entry) {
+				if AlreadyKnown(h, entry) {
+					fmt.Println("Tu as déjà trouvé cette lettre")
+					h.game()
+				} else {
+					h.KnownLetters = append(h.KnownLetters, entry)
+					h.updateword()
+					fmt.Println("Bien joué !")
+					h.game()
+				}
 			} else {
-				h.KnownLetters = append(h.KnownLetters, entry)
-				h.updateword()
-				fmt.Println("Bien joué !")
+				h.Attempts--
+				fmt.Println("La lettre ", entry, " n'est pas dans le mot")
+				h.game()
 			}
-		} else {
-			h.Attempts--
-			fmt.Println("La lettre ", entry, " n'est pas dans le mot")
+		} else if len(entry) >= 2 {
+			if entry == h.ToFind {
+				fmt.Println("Tu as gagné, le mot était bien ", h.ToFind)
+			} else {
+				h.Attempts--
+				h.Attempts--
+				fmt.Println("Ce n'est pas le mot")
+				h.game()
+			}
 		}
-		h.game()
 	}
 }
 func isintheword(word string, letter string) bool { //func to check if the letter is in the word
