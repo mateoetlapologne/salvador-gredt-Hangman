@@ -16,6 +16,7 @@ type HangManData struct {
 	ToFind       string
 	Attempts     int
 	KnownLetters []string
+	TriedLetters []string
 }
 
 func main() {
@@ -24,8 +25,9 @@ func main() {
 }
 
 func (h *HangManData) init() { //func to initialize the game
+	path := os.Args[1]
 	h.Attempts = 10
-	h.ToFind = randomWord()
+	h.ToFind = randomWord(path)
 	for _, v := range h.ToFind {
 		h.Word += "_"
 		_ = v //to avoid the error
@@ -36,7 +38,7 @@ func (h *HangManData) init() { //func to initialize the game
 	h.updateword()
 	h.game()
 }
-func (h *HangManData) game() {
+func (h *HangManData) game() { //func to play the game
 
 	if h.Attempts < 10 { //print the hangman position
 		url := "src/ascii-art/pos" + strconv.Itoa(h.Attempts) + ".txt"
@@ -49,9 +51,9 @@ func (h *HangManData) game() {
 		fmt.Println(string(content))
 	}
 	if h.Word == h.ToFind {
-		fmt.Println("Vous avez gagné")
+		fmt.Println("Vous avez gagné\n le mot était ", h.ToFind)
 	} else if h.Attempts == 0 {
-		fmt.Println("Vous avez perdu")
+		fmt.Println("Vous avez perdu,le mot était ", h.ToFind)
 	} else {
 		var entry string
 		fmt.Println("Il te reste ", h.Attempts, " essai(s) \nVoila les lettres que tu a trouvée(s) : ", h.Word, "\nVeuillez entrer une lettre : ")
@@ -67,18 +69,22 @@ func (h *HangManData) game() {
 					fmt.Println("Bien joué !")
 					h.game()
 				}
-			} else {
+			} else if !alreadytried(h, entry) {
 				h.Attempts--
 				fmt.Println("La lettre ", entry, " n'est pas dans le mot")
+				h.TriedLetters = append(h.TriedLetters, entry)
+				h.game()
+			} else {
+				fmt.Println("Tu as déjà essayé cette lettre")
 				h.game()
 			}
 		} else if len(entry) >= 2 {
 			if entry == h.ToFind {
-				fmt.Println("Tu as gagné, le mot était bien ", h.ToFind)
+				fmt.Println("Vous avez gagné\n le mot était ", h.ToFind)
 			} else {
 				h.Attempts--
 				h.Attempts--
-				fmt.Println("Ce n'est pas le mot")
+				fmt.Println("Ce n'est pas le mot, tu perds 2 essais")
 				h.game()
 			}
 		}
@@ -92,7 +98,15 @@ func isintheword(word string, letter string) bool { //func to check if the lette
 	}
 	return false
 }
-func AlreadyKnown(h *HangManData, letter string) bool {
+func alreadytried(h *HangManData, letter string) bool { //func to check if the letter is already tried
+	for _, v := range h.TriedLetters {
+		if v == letter {
+			return true
+		}
+	}
+	return false
+}
+func AlreadyKnown(h *HangManData, letter string) bool { //func to check if the letter is already known
 	for _, v := range h.KnownLetters {
 		if v == letter {
 			return true
@@ -110,9 +124,9 @@ func (h *HangManData) updateword() { //func to update the display
 		}
 	}
 }
-func randomWord() string { //func to get a random word from the file.txt
+func randomWord(arg string) string { //func to get a random word from the file.txt
 	//read the file
-	file, err := os.Open("src/words.txt")
+	file, err := os.Open(arg)
 	if err != nil {
 		log.Fatal(err)
 	}
