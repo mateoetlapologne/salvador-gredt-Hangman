@@ -7,7 +7,6 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -38,17 +37,10 @@ func (h *HangManData) init() { //func to initialize the game
 	h.updateword()
 	h.game()
 }
+
 func (h *HangManData) game() { //func to play the game
-
-	if h.Attempts < 10 { //print the hangman position
-		url := "src/ascii-art/pos" + strconv.Itoa(h.Attempts) + ".txt"
-		_ = url
-		content, err := ioutil.ReadFile(url)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(string(content))
+	if h.Attempts != 10 {
+		h.Displayhangman()
 	}
 	if h.Word == h.ToFind {
 		fmt.Println("Vous avez gagné\n le mot était ", h.ToFind)
@@ -89,6 +81,14 @@ func (h *HangManData) game() { //func to play the game
 			}
 		}
 	}
+}
+
+func (h *HangManData) Displayhangman() { //func to display the hangman
+	file, err := ioutil.ReadFile("src/hangman.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(file)[-(h.Attempts-9)*71 : -(h.Attempts-9)*71+71])
 }
 func isintheword(word string, letter string) bool { //func to check if the letter is in the word
 	for _, v := range word {
