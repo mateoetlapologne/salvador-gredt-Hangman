@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -39,57 +38,49 @@ func (h *HangManData) init() { //func to initialize the game
 }
 
 func (h *HangManData) game() { //func to play the game
-	if h.Attempts != 10 {
-		h.Displayhangman()
-	}
-	if h.Word == h.ToFind {
-		fmt.Println("Vous avez gagné\n le mot était ", h.ToFind)
-	} else if h.Attempts == 0 {
-		fmt.Println("Vous avez perdu,le mot était ", h.ToFind)
-	} else {
-		var entry string
-		fmt.Println("Il te reste ", h.Attempts, " essai(s) \nVoila les lettres que tu a trouvée(s) : ", h.Word, "\nVeuillez entrer une lettre : ")
-		fmt.Scan(&entry)
-		if len(entry) == 1 {
-			if isintheword(h.ToFind, entry) {
-				if AlreadyKnown(h, entry) {
-					fmt.Println("Tu as déjà trouvé cette lettre")
-					h.game()
-				} else {
-					h.KnownLetters = append(h.KnownLetters, entry)
-					h.updateword()
-					fmt.Println("Bien joué !")
-					h.game()
-				}
-			} else if !alreadytried(h, entry) {
-				h.Attempts--
-				fmt.Println("La lettre ", entry, " n'est pas dans le mot")
-				h.TriedLetters = append(h.TriedLetters, entry)
+	var entry string
+	// fmt.Println("Il te reste ", h.Attempts, " essai(s) \nVoila les lettres que tu a trouvée(s) : ", h.Word, "\nVeuillez entrer une lettre : ")
+	// fmt.Scan(&entry)
+	if len(entry) == 1 {
+		if isintheword(h.ToFind, entry) {
+			if AlreadyKnown(h, entry) {
+				// fmt.Println("Tu as déjà trouvé cette lettre")
 				h.game()
 			} else {
-				fmt.Println("Tu as déjà essayé cette lettre")
+				h.KnownLetters = append(h.KnownLetters, entry)
+				h.updateword()
+				// fmt.Println("Bien joué !")
 				h.game()
 			}
-		} else if len(entry) >= 2 {
-			if entry == h.ToFind {
-				fmt.Println("Vous avez gagné\n le mot était ", h.ToFind)
-			} else {
-				h.Attempts--
-				h.Attempts--
-				fmt.Println("Ce n'est pas le mot, tu perds 2 essais")
-				h.game()
-			}
+		} else if !alreadytried(h, entry) {
+			h.Attempts--
+			// fmt.Println("La lettre ", entry, " n'est pas dans le mot")
+			h.TriedLetters = append(h.TriedLetters, entry)
+			h.game()
+		} else {
+			// fmt.Println("Tu as déjà essayé cette lettre")
+			h.game()
+		}
+	} else if len(entry) >= 2 {
+		if entry == h.ToFind {
+			//fmt.Println("Vous avez gagné\n le mot était ", h.ToFind)
+		} else {
+			h.Attempts--
+			h.Attempts--
+			//fmt.Println("Ce n'est pas le mot, tu perds 2 essais")
+			h.game()
 		}
 	}
 }
 
-func (h *HangManData) Displayhangman() { //func to display the hangman
-	file, err := ioutil.ReadFile("src/hangman.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(string(file)[-(h.Attempts-9)*71 : -(h.Attempts-9)*71+71])
-}
+// func (h *HangManData) Displayhangman() { //func to display the hangman
+// 	file, err := ioutil.ReadFile("src/hangman.txt")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	fmt.Println(string(file)[-(h.Attempts-9)*71 : -(h.Attempts-9)*71+71])
+// }
+
 func isintheword(word string, letter string) bool { //func to check if the letter is in the word
 	for _, v := range word {
 		if string(v) == letter {
